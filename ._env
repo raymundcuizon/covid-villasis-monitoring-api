@@ -1,0 +1,9 @@
+  DB_NAME='villasis_tracker'
+  DB_USER='root'
+  DB_PASS='root12345'
+  DB_HOST='localhost'
+  DB_DIALECT='mysql'
+  PORT=3000
+  JWT_SECRET='abcdefghtjklmnopqrstuvwxyz1234567890'
+  JWT_SECRET2='0987654321qwertyuioplkjhgfdsazxcvbnm123456'
+  MIGRATE=true

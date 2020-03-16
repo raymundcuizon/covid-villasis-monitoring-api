@@ -1,0 +1,78 @@
+{
+  "name": "villasis-corona-tracker-api",
+  "version": "0.0.0",
+  "author": "",
+  "license": "",
+  "repository": {
+    "type": "",
+    "url": ""
+  },
+  "homepage": "",
+  "bugs": {
+    "url": ""
+  },
+  "scripts": {
+    "project": "node ./scripts/index.js",
+    "dev": "cross-env NODE_ENV=development node ./api/api.js",
+    "lint": "eslint ./api/. ./config/. ./test/.",
+    "start": "npm run nodemon",
+    "nodemon": "nodemon --exec npm run dev",
+    "prepush": "#npm test;",
+    "pretest": "npm run lint",
+    "production": "cross-env NODE_ENV=production node ./api/api.js",
+    "test": "cross-env NODE_ENV=testing jest --coverage",
+    "test-ci": "jest --coverage --forceExit"
+  },
+  "jest": {
+    "globals": {
+      "__DEV__": true
+    },
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
+  "dependencies": {
+    "apollo-server-express": "^2.10.1",
+    "async": "^3.2.0",
+    "bcrypt-nodejs": "^0.0.3",
+    "body-parser": "^1.18.2",
+    "core-js": "^2.6.5",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.4",
+    "express-graphql": "^0.9.0",
+    "express-routes-mapper": "^1.1.0",
+    "fast-csv": "^4.1.1",
+    "graphql": "^14.0.2",
+    "graphql-sequelize": "^9.4.0",
+    "graphql-type-decimal": "^1.0.0",
+    "graphql-upload": "^10.0.0",
+    "helmet": "^3.15.0",
+    "jsonwebtoken": "^8.4.0",
+    "lodash": "^4.17.15",
+    "lodash.merge": "^4.6.1",
+    "mkdirp": "^1.0.3",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.3",
+    "sequelize-paginate": "^1.1.6",
+    "sharp": "^0.25.1",
+    "shortid": "^2.2.15",
+    "slugify": "^1.3.6",
+    "streamifier": "^0.1.1",
+    "uuid": "^3.4.0"
+  },
+  "devDependencies": {
+    "cross-env": "^5.2.0",
+    "eslint": "^5.9.0",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-import": "^2.14.0",
+    "fs-extra": "^7.0.1",
+    "husky": "^1.2.0",
+    "jest": "^24.8.0",
+    "nodemon": "^1.18.6",
+    "shx": "^0.3.2",
+    "supertest": "^3.3.0",
+    "yargs": "^12.0.5"
+  }
+}
