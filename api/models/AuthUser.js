@@ -52,7 +52,7 @@ const InitData = {
       id: 'sys-001',
       username: 'superadmin',
       password: 'superadmin123',
-      email: 'admin@sakada.com',
+      email: 'admin@sample.com',
     });
   },
 };

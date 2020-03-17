@@ -19,6 +19,8 @@ const { models } = require('./models');
 
 // environment: development, testing, production
 const environment = process.env.NODE_ENV;
+const SECRET = process.env.JWT_SECRET;
+const SECRET2 = process.env.JWT_SECRET2;
 
 /**
  * express application
@@ -47,6 +49,8 @@ const graphQLServer = new ApolloServer({
   schema,
   context: ({ req }) => ({
     user: req.user,
+    SECRET,
+    SECRET2,
     models,
   }),
 });

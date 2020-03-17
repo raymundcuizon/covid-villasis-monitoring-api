@@ -39,7 +39,7 @@ const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2) => {
     return {};
   }
 
-  const user = await models.User.findOne({ where: { id: userId }, raw: true });
+  const user = await models.AuthUser.findOne({ where: { id: userId }, raw: true });
 
   if (!user) {
     return {};

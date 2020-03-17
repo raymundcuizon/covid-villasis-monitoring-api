@@ -8,6 +8,7 @@ const {
   createPerson,
   updateLocation,
   updateMonitoring,
+  userLogin,
 } = require('./mutations');
 
 const { authUserQuery, getPersons, getPerson } = require('./queries');
@@ -29,6 +30,7 @@ const RootMutation = new GraphQLObjectType({
     createPerson,
     updateLocation,
     updateMonitoring,
+    userLogin,
   }),
 });
 
