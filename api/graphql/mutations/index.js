@@ -3,7 +3,9 @@ const {
   GraphQLNonNull,
 } = require('graphql');
 
-const { createPerson, updateLocation, updateMonitoring } = require('./Person');
+const {
+  createPerson, updateLocation, updateMonitoring, updateStatus,
+} = require('./Person');
 
 const { AuthTokenType } = require('../types/MutationResponseType');
 const { tryLogin } = require('../../services/auth.service');
@@ -21,7 +23,7 @@ const userLogin = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_, { email, password }, { models, SECRET, SECRET2 }) =>
+  resolve: (_, { email, password }, { SECRET, SECRET2, models }) =>
     // eslint-disable-next-line implicit-arrow-linebreak
     tryLogin(email, password, models, SECRET, SECRET2),
 };
@@ -32,4 +34,5 @@ module.exports = {
   updateLocation,
   updateMonitoring,
   userLogin,
+  updateStatus,
 };

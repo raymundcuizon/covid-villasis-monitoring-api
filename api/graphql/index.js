@@ -9,9 +9,16 @@ const {
   updateLocation,
   updateMonitoring,
   userLogin,
+  updateStatus,
 } = require('./mutations');
 
-const { authUserQuery, getPersons, getPerson } = require('./queries');
+const {
+  authUserQuery,
+  getPersons,
+  getPerson,
+  getAllBrgyData,
+  getPersonsInBrgyData,
+} = require('./queries');
 
 const RootQuery = new GraphQLObjectType({
   name: 'rootQuery',
@@ -20,6 +27,8 @@ const RootQuery = new GraphQLObjectType({
     authUser: authUserQuery,
     getPersons,
     getPerson,
+    getAllBrgyData,
+    getPersonsInBrgyData,
   }),
 });
 
@@ -31,6 +40,7 @@ const RootMutation = new GraphQLObjectType({
     updateLocation,
     updateMonitoring,
     userLogin,
+    updateStatus,
   }),
 });
 

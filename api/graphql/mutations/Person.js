@@ -5,6 +5,7 @@ const { GraphQLString, GraphQLNonNull } = require('graphql');
 const { formatErrors } = require('../../services/formatErrors');
 const { personMutationResponse } = require('../types/MutationResponseType');
 const { LocationInputType, MonitoringInputType } = require('../inputTypes');
+const { personStatusType } = require('../sharedTypes/PersonStatusType');
 
 const createPerson = {
   type: personMutationResponse,
@@ -41,6 +42,10 @@ const createPerson = {
       name: 'location',
       type: LocationInputType,
     },
+    status: {
+      name: 'status',
+      type: new GraphQLNonNull(personStatusType),
+    },
   },
   resolve: async (_, args, { models }) => {
     try {
@@ -53,6 +58,7 @@ const createPerson = {
         gender,
         monitoring,
         location,
+        status,
       } = args;
 
       const response = await models.sequelize.transaction(async (t) => {
@@ -65,19 +71,13 @@ const createPerson = {
           age,
           gender,
           origin,
+          status,
+          ...monitoring,
+          ...location,
         };
 
         const crtPerson = await models.Person.create(personData, { transaction: t });
-        await models.Monitoring.create({
-          id: uuidv1(),
-          person_id: crtPerson.id,
-          ...monitoring,
-        }, { transaction: t });
-        await models.Location.create({
-          id: uuidv1(),
-          person_id: crtPerson.id,
-          ...location,
-        }, { transaction: t });
+
         return {
           ok: true,
           person: crtPerson,
@@ -119,15 +119,25 @@ const updateLocation = {
           }],
         };
       }
-      await models.Location.create({
-        id: uuidv1(),
-        person_id: foundPerson.id,
-        ...location,
+
+      const response = await models.sequelize.transaction(async (t) => {
+        await models.Location.create({
+          id: uuidv1(),
+          person_id: foundPerson.id,
+          address: foundPerson.address,
+          barangay: foundPerson.barangay,
+          city_town: foundPerson.city_town,
+          province: foundPerson.province,
+        }, { transaction: t });
+
+        const updateFoundPerson = await foundPerson.update({ ...location }, { transaction: t });
+
+        return {
+          ok: true,
+          person: updateFoundPerson,
+        };
       });
-      return {
-        ok: true,
-        person: foundPerson,
-      };
+      return response;
     } catch (err) {
       return {
         ok: false,
@@ -162,16 +172,23 @@ const updateMonitoring = {
           }],
         };
       }
+      const response = await models.sequelize.transaction(async (t) => {
+        await models.Monitoring.create({
+          id: uuidv1(),
+          person_id: foundPerson.id,
+          body_temp: foundPerson.body_temp,
+          symptoms: foundPerson.symptoms,
+          others: foundPerson.others,
+        }, { transaction: t });
 
-      await models.Monitoring.create({
-        id: uuidv1(),
-        person_id: foundPerson.id,
-        ...monitoring,
+        const updateFoundPerson = await foundPerson.update({ ...monitoring }, { transaction: t });
+
+        return {
+          ok: true,
+          person: updateFoundPerson,
+        };
       });
-      return {
-        ok: true,
-        person: foundPerson,
-      };
+      return response;
     } catch (err) {
       return {
         ok: false,
@@ -181,4 +198,60 @@ const updateMonitoring = {
   },
 };
 
-module.exports = { createPerson, updateLocation, updateMonitoring };
+const updateStatus = {
+  type: personMutationResponse,
+  args: {
+    pid: {
+      name: 'person id',
+      type: new GraphQLNonNull(GraphQLString),
+    },
+    status: {
+      name: 'status',
+      type: new GraphQLNonNull(personStatusType),
+    },
+  },
+  resolve: async (_, { pid, status }, { models }) => {
+    try {
+      const foundPerson = await models.Person.findOne({ where: { pid } });
+
+      if (!foundPerson) {
+        return {
+          ok: false,
+          errors: [{
+            path: 'foundPerson',
+            message: 'Pid does not exist',
+          }],
+        };
+      }
+      const response = await models.sequelize.transaction(async (t) => {
+        await models.StatusHistory.create({
+          id: uuidv1(),
+          person_id: foundPerson.id,
+          status: foundPerson.status,
+        }, { transaction: t });
+
+        const updateFoundPerson = await foundPerson.update({
+          status,
+        }, { transaction: t });
+
+        return {
+          ok: true,
+          person: updateFoundPerson,
+        };
+      });
+      return response;
+    } catch (err) {
+      return {
+        ok: false,
+        errors: formatErrors(err),
+      };
+    }
+  },
+};
+
+module.exports = {
+  createPerson,
+  updateLocation,
+  updateMonitoring,
+  updateStatus,
+};

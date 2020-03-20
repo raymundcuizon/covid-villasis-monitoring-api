@@ -6,13 +6,14 @@ const { AuthUser } = require('./AuthUser');
 const { Person } = require('./Person');
 const { Monitoring } = require('./Monitoring');
 const { Location } = require('./Location');
-
+const { StatusHistory } = require('./StatusHistory');
 
 const models = {
   AuthUser,
   Person,
   Location,
   Monitoring,
+  StatusHistory,
 };
 
 Object.keys(models).forEach((modelName) => {

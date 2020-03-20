@@ -47,8 +47,7 @@ app.use(bodyParser.json());
 
 const graphQLServer = new ApolloServer({
   schema,
-  context: ({ req }) => ({
-    user: req.user,
+  context: () => ({
     SECRET,
     SECRET2,
     models,
