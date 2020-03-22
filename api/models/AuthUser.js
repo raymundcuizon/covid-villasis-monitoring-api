@@ -57,6 +57,11 @@ const AuthUser = sequelize.define(
       allowNull: false,
       unique: true,
     },
+    is_activated: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false,
+      defaultValue: false,
+    },
   },
   { hooks, tableName },
 );
@@ -75,9 +80,10 @@ const InitData = {
       await AuthUser.create({
         id: 'sys-001',
         username: 'superadmin',
-        password: 'superadmin123',
+        password: 'superadmin',
         email: 'admin@sample.com',
         is_superuser: true,
+        is_activated: true,
         barangay: 'All',
         contact_number: 'N/A',
         contact_person: 'N/A',
@@ -90,9 +96,10 @@ const InitData = {
         const obj = {
           id: `sys-user-${counter}`,
           username: `user00${counter}`,
-          password: 'need-to-update-password',
+          password: '$2a$10$NOrDwNXMT.pWGcGHH0MTQOxgGk7c7DRljzwfbL6eU2nlGnhpSbqsC', // user000
           email: `user00${counter}@user.com`,
           is_superuser: false,
+          is_activated: false,
           barangay: value.name,
           contact_number: 'N/A',
           contact_person: 'N/A',

@@ -1,11 +1,20 @@
 const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcryptService = require('./bcrypt.service');
+const { brgy } = require('../../config/brgy');
 
 const createTokens = async (user, secret, secret2) => {
   const createToken = jwt.sign(
     {
-      user: _.pick(user, ['id', 'username']),
+      user: _.pick(user, [
+        'id',
+        'username',
+        'is_superuser',
+        'barangay',
+        'contact_number',
+        'contact_person',
+        'chairman',
+      ]),
     },
     secret,
     {
@@ -61,13 +70,13 @@ const refreshTokens = async (token, refreshToken, models, SECRET, SECRET2) => {
   };
 };
 
-const tryLogin = async (email, password, models, SECRET, SECRET2) => {
+const tryLogin = async (username, password, models, SECRET, SECRET2) => {
   // console.log({ SECRET, SECRET2 });
-  const user = await models.AuthUser.findOne({ where: { email }, raw: true });
+  const user = await models.AuthUser.findOne({ where: { username }, raw: true });
   if (!user) {
     return {
       ok: false,
-      errors: [{ path: 'email', message: 'Wrong email' }],
+      errors: [{ path: 'username', message: 'Wrong username' }],
     };
   }
 
@@ -82,10 +91,28 @@ const tryLogin = async (email, password, models, SECRET, SECRET2) => {
 
   const [token, refreshToken] = await createTokens(user, SECRET, refreshTokenSecret);
 
+  const nav = [];
+  if (user.is_superuser) {
+    _.forEach(brgy, (value) => {
+      nav.push({
+        name: value.name,
+        url: `/brangay/${value.name}`,
+        icon: 'icon-map',
+      });
+    });
+  } else {
+    nav.push({
+      name: user.barangay,
+      url: `/brangay/${user.barangay}`,
+      icon: 'icon-map',
+    });
+  }
+
   return {
     ok: true,
     token,
     refreshToken,
+    nav,
   };
 };
 

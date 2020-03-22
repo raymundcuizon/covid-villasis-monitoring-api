@@ -14,8 +14,8 @@ const userLogin = {
   type: AuthTokenType,
   description: 'The mutation that allows you to create token',
   args: {
-    email: {
-      name: 'email',
+    username: {
+      name: 'username',
       type: new GraphQLNonNull(GraphQLString),
     },
     password: {
@@ -23,9 +23,9 @@ const userLogin = {
       type: new GraphQLNonNull(GraphQLString),
     },
   },
-  resolve: (_, { email, password }, { SECRET, SECRET2, models }) =>
+  resolve: (_, { username, password }, { SECRET, SECRET2, models }) =>
     // eslint-disable-next-line implicit-arrow-linebreak
-    tryLogin(email, password, models, SECRET, SECRET2),
+    tryLogin(username, password, models, SECRET, SECRET2),
 };
 
 
