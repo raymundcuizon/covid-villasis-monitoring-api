@@ -96,14 +96,14 @@ const tryLogin = async (username, password, models, SECRET, SECRET2) => {
     _.forEach(brgy, (value) => {
       nav.push({
         name: value.name,
-        url: `/brangay/${value.name}`,
+        url: `/barangay/${value.name}`,
         icon: 'icon-map',
       });
     });
   } else {
     nav.push({
       name: user.barangay,
-      url: `/brangay/${user.barangay}`,
+      url: `/barangay/${user.barangay}`,
       icon: 'icon-map',
     });
   }

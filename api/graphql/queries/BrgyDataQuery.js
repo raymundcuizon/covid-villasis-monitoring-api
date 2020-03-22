@@ -93,6 +93,10 @@ const getPersonsInBrgyData = {
       name: 'barangay',
       type: new GraphQLNonNull(GraphQLString),
     },
+    name: {
+      name: 'name',
+      type: GraphQLString,
+    },
     page: {
       name: 'page',
       type: new GraphQLNonNull(GraphQLInt),
@@ -102,8 +106,38 @@ const getPersonsInBrgyData = {
       type: new GraphQLNonNull(GraphQLInt),
     },
   },
-  resolve: async (_, { barangay, page, limit }, { models }) => {
-    const data = await models.Person.pagination({ page, limit }, { barangay });
+  resolve: async (_, {
+    barangay,
+    page,
+    limit,
+    name,
+  }, { models }) => {
+    console.log(name);
+
+    let condition = {
+      barangay,
+      [models.Sequelize.Op.or]: [
+        {
+          firstname:
+          {
+            [models.Sequelize.Op.like]: `%${name}%`,
+          },
+        },
+        {
+          middlename: {
+            [models.Sequelize.Op.like]: `%${name}%`,
+          },
+        },
+        {
+          lastname: {
+            [models.Sequelize.Op.like]: `%${name}%`,
+          },
+        },
+      ],
+
+    };
+
+    const data = await models.Person.pagination({ page, limit }, condition);
     return {
       ok: true,
       persons: data.data_list,
