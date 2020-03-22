@@ -9,11 +9,13 @@ const cors = require('cors');
 const express = require('express');
 const { ApolloServer } = require('apollo-server-express');
 const helmet = require('helmet');
+const jwt = require('jsonwebtoken');
 /**
  * server configuration
  */
 const config = require('../config/');
 const dbService = require('./services/db.service');
+const { refreshTokens } = require('./services/auth.service');
 const { schema } = require('./graphql');
 const { models } = require('./models');
 
@@ -27,6 +29,26 @@ const SECRET2 = process.env.JWT_SECRET2;
  */
 const app = express();
 const DB = dbService(environment, config.migrate).start();
+
+const addUser = async (req, res, next) => {
+  const token = req.headers['x-token'];
+  if (token) {
+    try {
+      const { user } = jwt.verify(token, SECRET);
+      req.user = user;
+    } catch (err) {
+      const refreshToken = req.headers['x-refresh-token'];
+      const newTokens = await refreshTokens(token, refreshToken, models, SECRET, SECRET2);
+      if (newTokens.token && newTokens.refreshToken) {
+        res.set('Access-Control-Expose-Headers', 'x-token, x-refresh-token');
+        res.set('x-token', newTokens.token);
+        res.set('x-refresh-token', newTokens.refreshToken);
+      }
+      req.user = newTokens.user;
+    }
+  }
+  next();
+};
 
 // allow cross origin requests
 // configure to allow only requests from certain origins
@@ -44,10 +66,12 @@ app.use(
 // parsing the request bodys
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
+app.use(addUser);
 
 const graphQLServer = new ApolloServer({
   schema,
-  context: () => ({
+  context: ({ req }) => ({
+    user: req.user,
     SECRET,
     SECRET2,
     models,

@@ -13,7 +13,11 @@ const { PersonQueryResponseType } = require('../types/QueryResponseType');
 const getAllBrgyData = {
   type: OverallDataType,
   args: {},
-  resolve: async (_, args, { models }) => {
+  resolve: async (_, args, { models, user }) => {
+    if (!user) {
+      throw new Error('You are not authenticated!');
+    }
+
     const brgyData = await models.sequelize.query('SELECT barangay, status FROM persons', { type: models.sequelize.QueryTypes.SELECT });
 
     let template = [];
